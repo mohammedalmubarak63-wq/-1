@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceLinguist AI Agent</title>
+    <title>VoiceLinguist AI Agent - الترجمة الصوتية الفورية</title>
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #fff; padding: 20px; text-align: center; }
-        .container { max-width: 500px; margin: auto; background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        select { background: #334155; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-size: 16px; width: 100%; margin-bottom: 15px; }
-        button { background: #2563eb; color: white; border: none; padding: 16px 32px; font-size: 18px; font-weight: bold; border-radius: 50px; cursor: pointer; width: 100%; transition: 0.2s; }
+        .container { max-width: 600px; margin: auto; background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+        select { background: #334155; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-size: 15px; flex: 1; min-width: 140px; }
+        button { background: #2563eb; color: white; border: none; padding: 14px 28px; font-size: 17px; font-weight: bold; border-radius: 50px; cursor: pointer; width: 100%; transition: 0.2s; }
         button.recording { background: #dc2626; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        #output { background: #0f172a; padding: 15px; border-radius: 10px; margin-top: 20px; min-height: 120px; text-align: right; font-size: 18px; border: 1px solid #334155; line-height: 1.6; word-break: break-word; }
+        .box-container { display: flex; gap: 15px; margin-top: 20px; flex-direction: column; }
+        .box { background: #0f172a; padding: 15px; border-radius: 10px; text-align: right; border: 1px solid #334155; min-height: 90px; }
+        .box h3 { margin-top: 0; font-size: 14px; color: #38bdf8; margin-bottom: 8px; }
+        .box p { margin: 0; font-size: 16px; line-height: 1.5; word-break: break-word; color: #f8fafc; }
         .status { margin-top: 12px; font-size: 14px; color: #94a3b8; }
     </style>
 </head>
@@ -19,25 +23,49 @@
     <div class="container">
         <h2>VoiceLinguist AI Agent</h2>
         
-        <label for="langSelect" style="display:block; text-align:right; margin-bottom:5px; color:#cbd5e1;">اختر لغة التحدث:</label>
-        <select id="langSelect">
-            <option value="ar-SA">العربية (Saudi Arabia)</option>
-            <option value="en-US">English (US)</option>
-            <option value="ar-EG">العربية (مصر)</option>
-            <option value="fr-FR">Français</option>
-        </select>
+        <div class="controls">
+            <div>
+                <label style="display:block; text-align:right; font-size:13px; color:#cbd5e1; margin-bottom:4px;">لغة التحدث (الاستماع):</label>
+                <select id="sourceLang">
+                    <option value="ar-SA">العربية</option>
+                    <option value="en-US">English</option>
+                    <option value="fr-FR">Français</option>
+                    <option value="es-ES">Español</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block; text-align:right; font-size:13px; color:#cbd5e1; margin-bottom:4px;">لغة الترجمة المطلوبة:</label>
+                <select id="targetLang">
+                    <option value="en">English</option>
+                    <option value="ar">العربية</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+        </div>
 
-        <button id="micBtn" onclick="toggleRecord()">🎤 اضغط للتحدث</button>
-        <p class="status" id="statusText">جاهز للتسجيل...</p>
+        <button id="micBtn" onclick="toggleRecord()">🎤 اضغط لبدء الاستماع والترجمة</button>
+        <p class="status" id="statusText">جاهز...</p>
         
-        <div id="output">النص المكتوب سيظهر هنا...</div>
+        <div class="box-container">
+            <div class="box">
+                <h3>النص الأصلي (المسموع):</h3>
+                <p id="originalOutput">...</p>
+            </div>
+            <div class="box">
+                <h3>الترجمة الفورية:</h3>
+                <p id="translatedOutput">...</p>
+            </div>
+        </div>
     </div>
 
     <script>
         const micBtn = document.getElementById('micBtn');
-        const output = document.getElementById('output');
+        const originalOutput = document.getElementById('originalOutput');
+        const translatedOutput = document.getElementById('translatedOutput');
         const statusText = document.getElementById('statusText');
-        const langSelect = document.getElementById('langSelect');
+        const sourceLang = document.getElementById('sourceLang');
+        const targetLang = document.getElementById('targetLang');
         
         let recognition;
         let isRecording = false;
@@ -45,7 +73,7 @@
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
         if (!SpeechRecognition) {
-            statusText.innerText = 'متصفح الجوال هذا لا يدعم تحويل الصوت إلى نص. يرجى تجربة Google Chrome.';
+            statusText.innerText = 'متصفحك لا يدعم التعرف الصوتي، استخدم Google Chrome.';
             micBtn.disabled = true;
         } else {
             recognition = new SpeechRecognition();
@@ -55,20 +83,32 @@
             recognition.onstart = () => {
                 isRecording = true;
                 micBtn.classList.add('recording');
-                micBtn.innerText = '⏹️ جاري الاستماع...';
-                statusText.innerText = 'جاري الاستماع الآن، تحدث بصوت واضح...';
+                micBtn.innerText = '⏹️ جاري الاستماع والترجمة...';
+                statusText.innerText = 'تحدث الآن...';
             };
 
-            recognition.onresult = (event) => {
+            recognition.onresult = async (event) => {
                 let transcript = '';
                 for (let i = 0; i < event.results.length; i++) {
                     transcript += event.results[i][0].transcript;
                 }
-                output.innerText = transcript;
+                originalOutput.innerText = transcript;
+
+                // تنفيذ الترجمة الفورية عبر خدمة مترجم مجانية سريعة
+                if (transcript.trim().length > 0) {
+                    try {
+                        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(transcript)}&langpair=${sourceLang.value.substring(0,2)}|${targetLang.value}`);
+                        const data = await res.json();
+                        if (data && data.responseData) {
+                            translatedOutput.innerText = data.responseData.translatedText;
+                        }
+                    } catch (e) {
+                        translatedOutput.innerText = 'جاري الترجمة...';
+                    }
+                }
             };
 
             recognition.onerror = (event) => {
-                console.error('Speech error:', event.error);
                 statusText.innerText = 'تنبيه: ' + event.error;
             };
 
@@ -77,8 +117,8 @@
                     try { recognition.start(); } catch(e){}
                 } else {
                     micBtn.classList.remove('recording');
-                    micBtn.innerText = '🎤 اضغط للتحدث';
-                    statusText.innerText = 'تم إيقاف التسجيل.';
+                    micBtn.innerText = '🎤 اضغط لبدء الاستماع والترجمة';
+                    statusText.innerText = 'تم التوقف.';
                 }
             };
         }
@@ -88,16 +128,16 @@
 
             if (!isRecording) {
                 try {
-                    // طلب إذن الميكروفون صراحة للجوال
+                    // تفعيل إذن الميكروفون للجوال إجباريّاً قبل التشغيل
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     stream.getTracks().forEach(track => track.stop());
 
-                    // تحديد اللغة المختارة صراحة للجوال
-                    recognition.lang = langSelect.value;
-                    output.innerText = '';
+                    recognition.lang = sourceLang.value;
+                    originalOutput.innerText = '...';
+                    translatedOutput.innerText = '...';
                     recognition.start();
                 } catch (err) {
-                    alert('يرجى السماح باستخدام الميكروفون من إعدادات الجوال/المتصفح.');
+                    alert('يرجى السماح بالميكروفون من إعدادات المتصفح.');
                     statusText.innerText = 'تم رفض الإذن.';
                 }
             } else {
