@@ -2,428 +2,109 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>المترجم الصوتي الذكي - VoiceLinguist AI</title>
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="VoiceLinguist">
-    
-    <!-- PWA Manifest Inline -->
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogItrZhdiq2LHYrNmA2KfZhCDYp9mE2LXZiNiq2Yog2KfZhNmA2YPYiiAtIFZvaWNlTGluZ3Vpc3QgQUkiLAogICJzaG9ydF9uYW1lIjogIlZvaWNlTGluZ3Vpc3QiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzBmMTcyYSIsCiAgInRoZW1lX2NvbG9yIjogIiM0ZjQ2ZTUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJz48cmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgZmlsbD0nIzRmNDZlNScgcng9JzEyMCcvPjxwYXRoIGQ9J00yNTYgOTZjLTM1LjMgMC02NCAyOC43LTY0IDY0djEyOGMwIDM1LjMgMjguNyA2NCA2NCA2NHM2NC0yOC43IDY0LTY0VjE2MGMwLTM1LjMtMjguNy02NC02NC02NHptOTYgMTI4YzAgNTMtNDMgOTYtOTYgOTZzLTk2LTQzLTk2LTk2SDY0YzAgNzAuNSA1Mi44IDEyOC44IDEyMCAxNDAuNFY0NDBoODB2LTY3LjZjNjcuMi0xMS42IDEyMC02OS45IDEyMC0xNDA0aC0zMnonIGZpbGw9J3doaXRlJy8+PC9zdmc+IiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfQogIF0KfQ==">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceLinguist AI Agent</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap');
-        body { font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        .pulse-ring {
-            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-        ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 4px; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #fff; padding: 20px; text-align: center; }
+        .container { max-width: 500px; margin: auto; background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        select { background: #334155; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-size: 16px; width: 100%; margin-bottom: 15px; }
+        button { background: #2563eb; color: white; border: none; padding: 16px 32px; font-size: 18px; font-weight: bold; border-radius: 50px; cursor: pointer; width: 100%; transition: 0.2s; }
+        button.recording { background: #dc2626; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        #output { background: #0f172a; padding: 15px; border-radius: 10px; margin-top: 20px; min-height: 120px; text-align: right; font-size: 18px; border: 1px solid #334155; line-height: 1.6; word-break: break-word; }
+        .status { margin-top: 12px; font-size: 14px; color: #94a3b8; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+<body>
+    <div class="container">
+        <h2>VoiceLinguist AI Agent</h2>
+        
+        <label for="langSelect" style="display:block; text-align:right; margin-bottom:5px; color:#cbd5e1;">اختر لغة التحدث:</label>
+        <select id="langSelect">
+            <option value="ar-SA">العربية (Saudi Arabia)</option>
+            <option value="en-US">English (US)</option>
+            <option value="ar-EG">العربية (مصر)</option>
+            <option value="fr-FR">Français</option>
+        </select>
 
-    <!-- Mobile-Optimized Top Header -->
-    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-4 py-3 shadow-md">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20">
-                    <i class="fa-solid fa-microphone-lines"></i>
-                </div>
-                <div>
-                    <h1 class="text-base sm:text-lg font-bold leading-tight">المترجم الصوتي الذكي</h1>
-                    <p class="text-[11px] text-slate-400">تحويل الصوت لكتابة أو ترجمة فورية</p>
-                </div>
-            </div>
-            
-            <button id="pwaInstallBtn" onclick="showPWAHelp()" class="bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 text-xs px-3 py-2 rounded-xl transition flex items-center gap-2">
-                <i class="fa-solid fa-mobile-screen-button"></i>
-                <span class="hidden sm:inline">تثبيت التطبيق</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Error / Alert Banner for Microphone Permissions -->
-    <div id="micErrorBanner" class="hidden bg-rose-950/80 border-b border-rose-800/60 px-4 py-3 text-rose-200 text-xs text-center flex items-center justify-center gap-2">
-        <i class="fa-solid fa-circle-exclamation text-rose-400 text-sm"></i>
-        <span id="micErrorMessage">يرجى السماح بإذن استخدام الميكروفون من إعدادات المتصفح للبدء بالتسجيل.</span>
+        <button id="micBtn" onclick="toggleRecord()">🎤 اضغط للتحدث</button>
+        <p class="status" id="statusText">جاهز للتسجيل...</p>
+        
+        <div id="output">النص المكتوب سيظهر هنا...</div>
     </div>
 
-    <!-- Main Workspace Area -->
-    <main class="max-w-4xl mx-auto w-full p-4 flex-1 flex flex-col gap-5">
-
-        <!-- Control Bar: Languages & Dictation settings -->
-        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col gap-4">
-            
-            <!-- Language Selectors Row -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-                
-                <!-- Source Language Select -->
-                <div>
-                    <label class="text-[11px] font-semibold text-slate-400 block mb-1">من (لغة الإدخال الصوتي):</label>
-                    <select id="srcLang" onchange="checkMode()" class="w-full bg-slate-950 border border-slate-800 text-xs sm:text-sm rounded-xl p-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                        <option value="auto" selected>🔍 التعرف التلقائي (Auto-Detect)</option>
-                        <option value="ar-SA">العربية (Arabic)</option>
-                        <option value="en-US">English (الإنجليزية)</option>
-                        <option value="ur-PK">Urdu - اردو (الأوردو - باكستان)</option>
-                        <option value="hi-IN">Hindi - हिन्दी (الهندية - الهند)</option>
-                        <option value="pa-PK">Punjabi - پنجابی (البنجابية)</option>
-                        <option value="bn-BD">Bengali - বাংলা (البنغالية)</option>
-                        <option value="sd-PK">Sindhi - سنڌي (السندية)</option>
-                        <option value="ta-IN">Tamil - தமிழ் (التاميلية)</option>
-                        <option value="fr-FR">Français (الفرنسية)</option>
-                        <option value="es-ES">Español (الإسبانية)</option>
-                        <option value="tr-TR">Türkçe (التركية)</option>
-                    </select>
-                </div>
-
-                <!-- Swap Button & Target Language Select -->
-                <div class="flex items-center gap-2">
-                    <button id="swapLangBtn" onclick="swapLanguages()" title="تبديل اللغات" class="bg-slate-800 hover:bg-slate-700 mt-5 p-3 rounded-xl text-slate-300 transition shrink-0 active:scale-95">
-                        <i class="fa-solid fa-arrows-rotate"></i>
-                    </button>
-
-                    <div class="flex-1">
-                        <label class="text-[11px] font-semibold text-slate-400 block mb-1">إلى (لغة الإخراج والترجمة):</label>
-                        <select id="targetLang" onchange="checkMode()" class="w-full bg-slate-950 border border-slate-800 text-xs sm:text-sm rounded-xl p-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                            <option value="ar-SA" selected>العربية (Arabic)</option>
-                            <option value="en-US">English (الإنجليزية)</option>
-                            <option value="ur-PK">Urdu - اردو (الأوردو)</option>
-                            <option value="hi-IN">Hindi - हिन्दी (الهندية)</option>
-                            <option value="pa-PK">Punjabi - پنجابی (البنجابية)</option>
-                            <option value="bn-BD">Bengali - বাংলা (البنغالية)</option>
-                            <option value="fr-FR">Français (الفرنسية)</option>
-                            <option value="es-ES">Español (الإسبانية)</option>
-                            <option value="tr-TR">Türkçe (التركية)</option>
-                        </select>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Mode & Dictation Toggles Row -->
-            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
-                <div class="flex-1 min-w-[150px]">
-                    <label class="text-[11px] font-semibold text-slate-400 block mb-1">وضع الإخراج:</label>
-                    <select id="outputMode" class="w-full bg-slate-950 border border-slate-800 text-xs rounded-xl p-2.5 text-slate-200 focus:outline-none">
-                        <option value="both">كتابة وصوت ناطق</option>
-                        <option value="text">كتابة فقط (نص)</option>
-                        <option value="audio">صوت فقط</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-2 rounded-xl mt-4 sm:mt-0">
-                    <input type="checkbox" id="continuousMode" checked class="w-4 h-4 text-indigo-600 rounded focus:ring-0 accent-indigo-600 cursor-pointer">
-                    <label for="continuousMode" class="text-xs text-slate-300 cursor-pointer select-none">تسجيل مستمر (بدون توقف)</label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mode Indicator / Notice -->
-        <div id="dictationNotice" class="hidden bg-indigo-950/40 border border-indigo-500/30 text-indigo-200 text-xs p-3 rounded-xl flex items-center gap-2">
-            <i class="fa-solid fa-pen-to-square text-indigo-400 text-sm"></i>
-            <span><strong>وضع الكتابة الصوتية (الإملاء):</strong> تم اختيار نفس اللغة، سيعمل التطبيق على تحويل صوتك إلى نص مكتوب بسرعة فائقة دون ترجمة.</span>
-        </div>
-
-        <!-- Microphone Interactive Section -->
-        <div class="bg-gradient-to-b from-slate-900/80 to-slate-900/30 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-inner relative overflow-hidden">
-            
-            <!-- Record Button -->
-            <button id="micBtn" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-3xl sm:text-4xl shadow-xl shadow-indigo-600/30 flex items-center justify-center transition-all duration-300 active:scale-90 z-10">
-                <i id="micIcon" class="fa-solid fa-microphone"></i>
-            </button>
-            
-            <p id="statusText" class="mt-4 text-xs sm:text-sm font-medium text-slate-300 z-10">اضغط للميكروفون لبدء التحدث أو الإملاء الصوتي المباشر</p>
-            <p id="micSubHint" class="text-[11px] text-slate-500 mt-1 z-10">يدعم الميكروفون العمل المباشر على الآيفون والأندرويد واللابتوب</p>
-        </div>
-
-        <!-- Text Input & Result Textarea Box -->
-        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-                    <i class="fa-solid fa-align-right text-indigo-400"></i> النص المكتوب / المدخل:
-                </span>
-                <button onclick="clearText()" class="text-xs text-rose-400 hover:text-rose-300 transition">
-                    <i class="fa-solid fa-trash-can"></i> مسح النص
-                </button>
-            </div>
-            
-            <textarea id="textInput" rows="4" placeholder="سيظهر الكلام المنطوق هنا مباشرة أثناء التحدث... أو يمكنك الكتابة يدوياً هنا ثم الضغط على ترجمة ونطق." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-100 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/80 resize-none leading-relaxed transition"></textarea>
-            
-            <div class="flex items-center justify-between flex-wrap gap-2 pt-1">
-                <div class="flex gap-2 flex-wrap">
-                    <button id="translateManualBtn" onclick="speakTarget()" class="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-language"></i> ترجمة / نطق النص
-                    </button>
-                    <button id="speakOriginalBtn" onclick="speakSource()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-2.5 rounded-xl transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-volume-high"></i> نطق الأصل
-                    </button>
-                </div>
-                
-                <button id="copyBtn" onclick="copyText()" class="text-xs bg-slate-800 hover:bg-slate-700 active:bg-slate-800 text-slate-300 border border-slate-700/60 px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-copy"></i> نسخ النص
-                </button>
-            </div>
-        </div>
-
-        <!-- History Container -->
-        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
-            <div class="flex items-center justify-between">
-                <h3 class="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-                    <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> سجل الإملاء والترجمات:
-                </h3>
-                <button onclick="clearHistory()" class="text-[11px] text-slate-500 hover:text-slate-300 transition">مسح السجل</button>
-            </div>
-            
-            <div id="historyList" class="flex flex-col gap-2 max-h-52 overflow-y-auto pr-1">
-                <p id="emptyHistory" class="text-xs text-slate-500 text-center py-4">لا يوجد سجل بعد...</p>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="text-center text-[11px] text-slate-500 py-3 border-t border-slate-900">
-        المترجم الصوتي الذكي - VoiceLinguist AI Agent &copy; 2026
-    </footer>
-
-    <!-- Core App Logic & Mobile Microphone Fix Script -->
     <script>
-        let isRecording = false;
-        let recognition = null;
-        let mediaStream = null;
-
         const micBtn = document.getElementById('micBtn');
-        const micIcon = document.getElementById('micIcon');
+        const output = document.getElementById('output');
         const statusText = document.getElementById('statusText');
-        const textInput = document.getElementById('textInput');
-        const srcLang = document.getElementById('srcLang');
-        const targetLang = document.getElementById('targetLang');
-        const dictationNotice = document.getElementById('dictationNotice');
-        const historyList = document.getElementById('historyList');
-        const micErrorBanner = document.getElementById('micErrorBanner');
-        const micErrorMessage = document.getElementById('micErrorMessage');
+        const langSelect = document.getElementById('langSelect');
+        
+        let recognition;
+        let isRecording = false;
 
-        // Check if user is on same input & output language (Dictation mode)
-        function checkMode() {
-            if (srcLang.value !== 'auto' && srcLang.value.split('-')[0] === targetLang.value.split('-')[0]) {
-                dictationNotice.classList.remove('hidden');
-            } else {
-                dictationNotice.classList.add('hidden');
-            }
-        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        function swapLanguages() {
-            if (srcLang.value !== 'auto') {
-                const temp = srcLang.value;
-                srcLang.value = targetLang.value;
-                targetLang.value = temp;
-                checkMode();
-            }
-        }
-
-        // Initialize Web Speech Recognition with Mobile Fixes
-        function getSpeechRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return null;
-            
-            const instance = new SpeechRecognition();
-            instance.continuous = true;
-            instance.interimResults = true;
-            return instance;
-        }
-
-        // Handle Audio Microphone Stream for Mobile Browsers
-        async function requestMicrophonePermission() {
-            micErrorBanner.classList.add('hidden');
-            try {
-                // Request explicit audio stream from getUserMedia (Triggers standard native prompt on iOS Safari and Android Chrome)
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                }
-                return true;
-            } catch (err) {
-                console.warn('Microphone permission request error:', err);
-                showMicError('لم يتم منح إذن استخدام الميكروفون. يرجى تفعيل الإذن من إعدادات الموقع بالمتصفح.');
-                return false;
-            }
-        }
-
-        function showMicError(msg) {
-            micErrorMessage.innerText = msg;
-            micErrorBanner.classList.remove('hidden');
-        }
-
-        async function startRecording() {
-            const hasPermission = await requestMicrophonePermission();
-            if (!hasPermission) return;
-
-            recognition = getSpeechRecognition();
-            if (!recognition) {
-                showMicError('المتصفح الذي تستخدمه لا يدعم التعرف الصوتي المباشر. يرجى استخدام متصفح Chrome أو Safari الحديث.');
-                return;
-            }
-
-            recognition.lang = srcLang.value === 'auto' ? 'ar-SA' : srcLang.value;
+        if (!SpeechRecognition) {
+            statusText.innerText = 'متصفح الجوال هذا لا يدعم تحويل الصوت إلى نص. يرجى تجربة Google Chrome.';
+            micBtn.disabled = true;
+        } else {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
 
             recognition.onstart = () => {
                 isRecording = true;
-                micBtn.classList.add('pulse-ring', 'bg-rose-600', 'hover:bg-rose-500', 'shadow-rose-600/40');
-                micBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-500', 'shadow-indigo-600/30');
-                micIcon.className = 'fa-solid fa-stop';
-                statusText.innerText = "جاري الاستماع الآن... اتكلم بحرية";
-                statusText.classList.add('text-rose-400');
+                micBtn.classList.add('recording');
+                micBtn.innerText = '⏹️ جاري الاستماع...';
+                statusText.innerText = 'جاري الاستماع الآن، تحدث بصوت واضح...';
             };
 
             recognition.onresult = (event) => {
                 let transcript = '';
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                for (let i = 0; i < event.results.length; i++) {
                     transcript += event.results[i][0].transcript;
                 }
-                if (transcript.trim()) {
-                    textInput.value = transcript;
-                }
+                output.innerText = transcript;
             };
 
-            recognition.onerror = (e) => {
-                console.warn('Speech Recognition error:', e.error);
-                if (e.error === 'not-allowed') {
-                    showMicError('الميكروفون محظور! اضغط على علامة القفل/الميكروفون بجانب رابط الموقع بالمتصفح واسمح به.');
-                }
-                stopRecording();
+            recognition.onerror = (event) => {
+                console.error('Speech error:', event.error);
+                statusText.innerText = 'تنبيه: ' + event.error;
             };
 
             recognition.onend = () => {
-                // Continuous Recording logic for longer texts
-                if (isRecording && document.getElementById('continuousMode').checked) {
-                    try { 
-                        recognition.start(); 
-                    } catch(err) {
-                        stopRecording();
-                    }
+                if (isRecording) {
+                    try { recognition.start(); } catch(e){}
                 } else {
-                    stopRecording();
+                    micBtn.classList.remove('recording');
+                    micBtn.innerText = '🎤 اضغط للتحدث';
+                    statusText.innerText = 'تم إيقاف التسجيل.';
                 }
             };
-
-            try {
-                recognition.start();
-            } catch (err) {
-                console.error('Start recognition failed:', err);
-                stopRecording();
-            }
         }
 
-        function stopRecording() {
-            isRecording = false;
-            micBtn.classList.remove('pulse-ring', 'bg-rose-600', 'hover:bg-rose-500', 'shadow-rose-600/40');
-            micBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-500', 'shadow-indigo-600/30');
-            micIcon.className = 'fa-solid fa-microphone';
-            statusText.innerText = "اضغط للميكروفون لبدء التحدث أو الإملاء الصوتى المباشر";
-            statusText.classList.remove('text-rose-400');
+        async function toggleRecord() {
+            if (!recognition) return;
 
-            if (recognition) {
-                try { recognition.stop(); } catch(e) {}
-            }
+            if (!isRecording) {
+                try {
+                    // طلب إذن الميكروفون صراحة للجوال
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(track => track.stop());
 
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-
-            if (textInput.value.trim().length > 0) {
-                addToHistory(textInput.value.trim());
-            }
-        }
-
-        micBtn.addEventListener('click', () => {
-            if (isRecording) {
-                stopRecording();
+                    // تحديد اللغة المختارة صراحة للجوال
+                    recognition.lang = langSelect.value;
+                    output.innerText = '';
+                    recognition.start();
+                } catch (err) {
+                    alert('يرجى السماح باستخدام الميكروفون من إعدادات الجوال/المتصفح.');
+                    statusText.innerText = 'تم رفض الإذن.';
+                }
             } else {
-                startRecording();
-            }
-        });
-
-        // Text-to-Speech (TTS) Engine
-        function speakText(text, lang) {
-            if ('speechSynthesis' in window && text) {
-                window.speechSynthesis.cancel(); // Reset previous synthesis queue
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = lang;
-                utterance.rate = 1.0;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert('عذراً، متصفحك لا يدعم محرك النطق الصوتي.');
+                isRecording = false;
+                recognition.stop();
             }
         }
-
-        function speakSource() {
-            if (textInput.value) speakText(textInput.value, srcLang.value === 'auto' ? 'ar-SA' : srcLang.value);
-        }
-
-        function speakTarget() {
-            if (textInput.value) speakText(textInput.value, targetLang.value);
-        }
-
-        function clearText() {
-            textInput.value = '';
-        }
-
-        function copyText() {
-            if (textInput.value) {
-                navigator.clipboard.writeText(textInput.value);
-                alert('تم نسخ النص بنجاح إلى المحفظة!');
-            }
-        }
-
-        // History Management
-        function addToHistory(text) {
-            const emptyHistory = document.getElementById('emptyHistory');
-            if (emptyHistory) emptyHistory.remove();
-
-            const item = document.createElement('div');
-            item.className = 'bg-slate-950 border border-slate-800/80 p-3 rounded-xl flex items-center justify-between text-xs text-slate-200 transition hover:border-slate-700';
-            item.innerHTML = `
-                <span class="truncate flex-1 pl-2 text-slate-300 font-medium">${escapeHtml(text)}</span>
-                <button onclick="copyHistoryItem('${escapeHtml(text)}')" class="text-slate-400 hover:text-white p-1.5 rounded-lg bg-slate-900 border border-slate-800">
-                    <i class="fa-solid fa-copy"></i>
-                </button>
-            `;
-            historyList.prepend(item);
-        }
-
-        function copyHistoryItem(txt) {
-            navigator.clipboard.writeText(txt);
-            alert('تم نسخ العنصر من السجل!');
-        }
-
-        function clearHistory() {
-            historyList.innerHTML = '<p id="emptyHistory" class="text-xs text-slate-500 text-center py-4">لا يوجد سجل بعد...</p>';
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        }
-
-        function showPWAHelp() {
-            alert('لتثبيت التطبيق على الجوال كاختصار:\n\n1. على الآيفون (Safari):\nاضغط زر المشاركة (Share) في الأسفل ثم اختر (إضافة إلى الشاشة الرئيسية).\n\n2. على الأندرويد (Chrome):\nاضغط قائمة النقاط الثلاث (⋮) ثم اختر (تثبيت التطبيق) أو (الإضافة إلى الشاشة الرئيسية).');
-        }
-
-        // Initialize mode check on load
-        checkMode();
     </script>
 </body>
 </html>
