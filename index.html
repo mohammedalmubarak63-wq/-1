@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceLinguist AI Agent - النظام المزدوج المطور</title>
+    <title>VoiceLinguist AI Agent - الاستجابة السريعة</title>
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #fff; padding: 15px; margin: 0; }
         .container { max-width: 650px; margin: auto; }
@@ -16,7 +16,7 @@
         .group { flex: 1; min-width: 140px; }
         label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
         
-        select, textarea, input { width: 100%; background: #0f172a; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+        select, textarea { width: 100%; background: #0f172a; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
         textarea { resize: vertical; min-height: 70px; }
         
         button { background: #2563eb; color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; transition: 0.2s; margin-top: 8px; }
@@ -32,7 +32,7 @@
     <div class="container">
         <h1>VoiceLinguist AI Agent</h1>
 
-        <!-- ================= القسم الأول: التفريغ الصوتي (بدون تكرار) ================= -->
+        <!-- ================= القسم الأول: التفريغ الصوتي السريع ================= -->
         <div class="section">
             <h2>1️⃣ قسم تحويل الصوت إلى نص مكتوب</h2>
             <div class="controls">
@@ -52,10 +52,10 @@
             </div>
             <button id="sttBtn" onclick="toggleSTT()">🎤 ابدأ التسجيل الصوتي</button>
             <div class="status" id="sttStatus">جاهز...</div>
-            <div class="output-box" id="sttOutput">النص المكتوب سيظهر هنا بدون تكرار...</div>
+            <div class="output-box" id="sttOutput">النص المكتوب سيظهر هنا...</div>
         </div>
 
-        <!-- ================= القسم الثاني: الترجمة (صوت، كتابة، ونطق) ================= -->
+        <!-- ================= القسم الثاني: الترجمة السريعة ================= -->
         <div class="section">
             <h2>2️⃣ قسم الترجمة الفورية (كتابة + صوت + نطق)</h2>
             <div class="controls">
@@ -92,7 +92,6 @@
             <label style="margin-top: 10px; display:block;">النتيجة المترجمة:</label>
             <div class="output-box" id="transOutput">الترجمة ستظهر هنا...</div>
             
-            <!-- زر نطق الترجمة صوتاً -->
             <button class="secondary" onclick="speakTranslation()">🔊 استماع للترجمة صوتياً</button>
         </div>
     </div>
@@ -100,7 +99,16 @@
     <script>
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        // --- القسم الأول: STT (منع التكرار) ---
+        // تهيئة إذن الميكروفون عند فتح الصفحة مباشرة لمنع التأخير عند الضغط
+        window.addEventListener('DOMContentLoaded', () => {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    stream.getTracks().forEach(t => t.stop());
+                }).catch(() => {});
+            }
+        });
+
+        // --- القسم الأول: STT سريع ---
         let sttRecognition;
         let isSttRunning = false;
         const sttBtn = document.getElementById('sttBtn');
@@ -110,14 +118,14 @@
 
         if (SpeechRecognition) {
             sttRecognition = new SpeechRecognition();
-            sttRecognition.continuous = false; // جعلها غير مستمرة لمنع تكرار الجمل
+            sttRecognition.continuous = false;
             sttRecognition.interimResults = true;
 
             sttRecognition.onstart = () => {
                 isSttRunning = true;
                 sttBtn.classList.add('recording');
-                sttBtn.innerText = '⏹️ جاري الاستماع...';
-                sttStatus.innerText = 'تحدث الآن...';
+                sttBtn.innerText = '⏹️ جاري الاستماع الفوري...';
+                sttStatus.innerText = 'تحدث الآن مباشرة...';
             };
             sttRecognition.onresult = (e) => {
                 let text = '';
@@ -135,22 +143,18 @@
             };
         }
 
-        async function toggleSTT() {
+        function toggleSTT() {
             if (!sttRecognition) { alert('المتصفح لا يدعم الصوت'); return; }
             if (!isSttRunning) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(t => t.stop());
-                    sttRecognition.lang = sttLang.value;
-                    sttOutput.innerText = '';
-                    sttRecognition.start();
-                } catch(err) { alert('يرجى السماح بالميكروفون'); }
+                sttRecognition.lang = sttLang.value;
+                sttOutput.innerText = '';
+                try { sttRecognition.start(); } catch(err){}
             } else {
                 sttRecognition.stop();
             }
         }
 
-        // --- القسم الثاني: الترجمة (كتابة أو صوت + نطق) ---
+        // --- القسم الثاني: الترجمة ---
         const transInput = document.getElementById('transInput');
         const transOutput = document.getElementById('transOutput');
         const transSource = document.getElementById('transSource');
@@ -164,16 +168,19 @@
         if (SpeechRecognition) {
             transRecognition = new SpeechRecognition();
             transRecognition.continuous = false;
-            transRecognition.interimResults = false;
+            transRecognition.interimResults = true;
 
             transRecognition.onstart = () => {
                 isTransVoiceRunning = true;
                 transMicBtn.classList.add('recording');
-                transMicBtn.innerText = '⏹️ استماع للترجمة...';
+                transMicBtn.innerText = '⏹️ استماع فوري...';
                 transStatus.innerText = 'تحدث الآن...';
             };
             transRecognition.onresult = async (e) => {
-                const spokenText = e.results[0][0].transcript;
+                let spokenText = '';
+                for (let i = 0; i < e.results.length; i++) {
+                    spokenText += e.results[i][0].transcript;
+                }
                 transInput.value = spokenText;
                 await translateText(spokenText);
             };
@@ -186,16 +193,12 @@
             };
         }
 
-        async function toggleTranslationVoice() {
+        function toggleTranslationVoice() {
             if (!transRecognition) { alert('المتصفح لا يدعم الصوت'); return; }
             if (!isTransVoiceRunning) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(t => t.stop());
-                    const langMap = { ar: 'ar-SA', ur: 'ur-PK', en: 'en-US', hi: 'hi-IN', fr: 'fr-FR', es: 'es-ES' };
-                    transRecognition.lang = langMap[transSource.value] || 'ar-SA';
-                    transRecognition.start();
-                } catch(err) { alert('يرجى السماح بالميكروفون'); }
+                const langMap = { ar: 'ar-SA', ur: 'ur-PK', en: 'en-US', hi: 'hi-IN', fr: 'fr-FR', es: 'es-ES' };
+                transRecognition.lang = langMap[transSource.value] || 'ar-SA';
+                try { transRecognition.start(); } catch(err){}
             } else {
                 transRecognition.stop();
             }
@@ -224,7 +227,6 @@
             }
         }
 
-        // --- نطق النص المترجم صوتاً (Text-to-Speech) ---
         function speakTranslation() {
             const textToSpeak = transOutput.innerText;
             if (!textToSpeak || textToSpeak.includes('الترجمة ستظهر') || textToSpeak.includes('جاري الترجمة')) {
@@ -235,7 +237,7 @@
                 alert('متصفحك لا يدعم خاصية النطق الصوتي.');
                 return;
             }
-            window.speechSynthesis.cancel(); // إيقاف أي نطق سابق
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = transTarget.value === 'ar' ? 'ar-SA' : (transTarget.value === 'ur' ? 'ur-PK' : 'en-US');
             window.speechSynthesis.speak(utterance);
