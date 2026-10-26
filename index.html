@@ -3,146 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceLinguist AI Agent - الترجمة الصوتية الفورية</title>
+    <title>VoiceLinguist AI Agent - النظام المزدوج</title>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #fff; padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: auto; background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
-        select { background: #334155; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-size: 15px; flex: 1; min-width: 140px; }
-        button { background: #2563eb; color: white; border: none; padding: 14px 28px; font-size: 17px; font-weight: bold; border-radius: 50px; cursor: pointer; width: 100%; transition: 0.2s; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #fff; padding: 15px; margin: 0; }
+        .container { max-width: 650px; margin: auto; }
+        h1 { text-align: center; font-size: 22px; color: #38bdf8; margin-bottom: 20px; }
+        
+        .section { background: #1e293b; padding: 20px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 1px solid #334155; }
+        .section h2 { font-size: 18px; margin-top: 0; color: #f8fafc; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        
+        .controls { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .group { flex: 1; min-width: 140px; }
+        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+        
+        select, textarea, input { width: 100%; background: #0f172a; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 70px; }
+        
+        button { background: #2563eb; color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; transition: 0.2s; margin-top: 8px; }
         button.recording { background: #dc2626; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        .box-container { display: flex; gap: 15px; margin-top: 20px; flex-direction: column; }
-        .box { background: #0f172a; padding: 15px; border-radius: 10px; text-align: right; border: 1px solid #334155; min-height: 90px; }
-        .box h3 { margin-top: 0; font-size: 14px; color: #38bdf8; margin-bottom: 8px; }
-        .box p { margin: 0; font-size: 16px; line-height: 1.5; word-break: break-word; color: #f8fafc; }
-        .status { margin-top: 12px; font-size: 14px; color: #94a3b8; }
+        
+        .output-box { background: #0f172a; padding: 12px; border-radius: 8px; margin-top: 12px; min-height: 60px; border: 1px solid #334155; font-size: 15px; line-height: 1.5; word-break: break-word; color: #e2e8f0; }
+        .status { font-size: 12px; color: #94a3b8; margin-top: 6px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>VoiceLinguist AI Agent</h2>
-        
-        <div class="controls">
-            <div>
-                <label style="display:block; text-align:right; font-size:13px; color:#cbd5e1; margin-bottom:4px;">لغة التحدث (الاستماع):</label>
-                <select id="sourceLang">
-                    <option value="ar-SA">العربية</option>
-                    <option value="en-US">English</option>
-                    <option value="fr-FR">Français</option>
-                    <option value="es-ES">Español</option>
-                </select>
+        <h1>VoiceLinguist AI Agent</h1>
+
+        <!-- ================= القسم الأول: تحويل الصوت إلى نص ================= -->
+        <div class="section">
+            <h2>1️⃣ قسم تحويل الصوت إلى نص مكتوب</h2>
+            <div class="controls">
+                <div class="group">
+                    <label>لغة التحدث (شاملة الأوردو وغيرها):</label>
+                    <select id="sttLang">
+                        <option value="ar-SA">العربية (Saudi Arabia)</option>
+                        <option value="ur-PK">اردو (Urdu)</option>
+                        <option value="en-US">English (US)</option>
+                        <option value="hi-IN">हिन्दी (Hindi)</option>
+                        <option value="fr-FR">Français</option>
+                        <option value="es-ES">Español</option>
+                        <option value="de-DE">Deutsch</option>
+                        <option value="zh-CN">中文 (Chinese)</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label style="display:block; text-align:right; font-size:13px; color:#cbd5e1; margin-bottom:4px;">لغة الترجمة المطلوبة:</label>
-                <select id="targetLang">
-                    <option value="en">English</option>
-                    <option value="ar">العربية</option>
-                    <option value="fr">Français</option>
-                    <option value="es">Español</option>
-                </select>
-            </div>
+            <button id="sttBtn" onclick="toggleSTT()">🎤 ابدأ التسجيل الصوتي</button>
+            <div class="status" id="sttStatus">جاهز...</div>
+            <div class="output-box" id="sttOutput">النص المكتوب سيظهر هنا...</div>
         </div>
 
-        <button id="micBtn" onclick="toggleRecord()">🎤 اضغط لبدء الاستماع والترجمة</button>
-        <p class="status" id="statusText">جاهز...</p>
-        
-        <div class="box-container">
-            <div class="box">
-                <h3>النص الأصلي (المسموع):</h3>
-                <p id="originalOutput">...</p>
+        <!-- ================= القسم الثاني: الترجمة الفورية (صوت أو كتابة) ================= -->
+        <div class="section">
+            <h2>2️⃣ قسم الترجمة الفورية (صوت أو كتابة)</h2>
+            <div class="controls">
+                <div class="group">
+                    <label>من لغة:</label>
+                    <select id="transSource">
+                        <option value="ar">العربية</option>
+                        <option value="ur">اردو (Urdu)</option>
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="fr">Français</option>
+                        <option value="es">Español</option>
+                    </select>
+                </div>
+                <div class="group">
+                    <label>إلى لغة:</label>
+                    <select id="transTarget">
+                        <option value="en">English</option>
+                        <option value="ar">العربية</option>
+                        <option value="ur">اردو (Urdu)</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="fr">Français</option>
+                        <option value="es">Español</option>
+                    </select>
+                </div>
             </div>
-            <div class="box">
-                <h3>الترجمة الفورية:</h3>
-                <p id="translatedOutput">...</p>
-            </div>
+
+            <label>أدخل النص للترجمة أو تحدث مباشرة:</label>
+            <textarea id="transInput" placeholder="اكتب هنا أو استخدم الصوت بالأسفل..." oninput="doTranslation()"></textarea>
+            
+            <button id="transMicBtn" onclick="toggleTranslationVoice()">🎤 ترجمة صوتية مباشرة</button>
+            <div class="status" id="transStatus">جاهز للترجمة الفورية...</div>
+            
+            <label style="margin-top: 10px; display:block;">النتيجة المترجمة:</label>
+            <div class="output-box" id="transOutput">الترجمة ستظهر هنا بدقة...</div>
         </div>
     </div>
 
     <script>
-        const micBtn = document.getElementById('micBtn');
-        const originalOutput = document.getElementById('originalOutput');
-        const translatedOutput = document.getElementById('translatedOutput');
-        const statusText = document.getElementById('statusText');
-        const sourceLang = document.getElementById('sourceLang');
-        const targetLang = document.getElementById('targetLang');
-        
-        let recognition;
-        let isRecording = false;
-
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        if (!SpeechRecognition) {
-            statusText.innerText = 'متصفحك لا يدعم التعرف الصوتي، استخدم Google Chrome.';
-            micBtn.disabled = true;
-        } else {
-            recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = true;
+        // --- محرك القسم الأول: STT (تحويل الصوت لنص) ---
+        let sttRecognition;
+        let isSttRunning = false;
+        const sttBtn = document.getElementById('sttBtn');
+        const sttOutput = document.getElementById('sttOutput');
+        const sttStatus = document.getElementById('sttStatus');
+        const sttLang = document.getElementById('sttLang');
 
-            recognition.onstart = () => {
-                isRecording = true;
-                micBtn.classList.add('recording');
-                micBtn.innerText = '⏹️ جاري الاستماع والترجمة...';
-                statusText.innerText = 'تحدث الآن...';
+        if (SpeechRecognition) {
+            sttRecognition = new SpeechRecognition();
+            sttRecognition.continuous = true;
+            sttRecognition.interimResults = true;
+
+            sttRecognition.onstart = () => {
+                isSttRunning = true;
+                sttBtn.classList.add('recording');
+                sttBtn.innerText = '⏹️ إيقاف التسجيل';
+                sttStatus.innerText = 'جاري الاستماع...';
             };
-
-            recognition.onresult = async (event) => {
-                let transcript = '';
-                for (let i = 0; i < event.results.length; i++) {
-                    transcript += event.results[i][0].transcript;
-                }
-                originalOutput.innerText = transcript;
-
-                // تنفيذ الترجمة الفورية عبر خدمة مترجم مجانية سريعة
-                if (transcript.trim().length > 0) {
-                    try {
-                        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(transcript)}&langpair=${sourceLang.value.substring(0,2)}|${targetLang.value}`);
-                        const data = await res.json();
-                        if (data && data.responseData) {
-                            translatedOutput.innerText = data.responseData.translatedText;
-                        }
-                    } catch (e) {
-                        translatedOutput.innerText = 'جاري الترجمة...';
-                    }
-                }
+            sttRecognition.onresult = (e) => {
+                let text = '';
+                for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
+                sttOutput.innerText = text;
             };
-
-            recognition.onerror = (event) => {
-                statusText.innerText = 'تنبيه: ' + event.error;
-            };
-
-            recognition.onend = () => {
-                if (isRecording) {
-                    try { recognition.start(); } catch(e){}
-                } else {
-                    micBtn.classList.remove('recording');
-                    micBtn.innerText = '🎤 اضغط لبدء الاستماع والترجمة';
-                    statusText.innerText = 'تم التوقف.';
+            sttRecognition.onerror = (e) => { sttStatus.innerText = 'خطأ: ' + e.error; };
+            sttRecognition.onend = () => {
+                if (isSttRunning) { try { sttRecognition.start(); } catch(err){} }
+                else {
+                    sttBtn.classList.remove('recording');
+                    sttBtn.innerText = '🎤 ابدأ التسجيل الصوتي';
+                    sttStatus.innerText = 'متوقف.';
                 }
             };
         }
 
-        async function toggleRecord() {
-            if (!recognition) return;
-
-            if (!isRecording) {
+        async function toggleSTT() {
+            if (!sttRecognition) { alert('المتصفح لا يدعم الصوت'); return; }
+            if (!isSttRunning) {
                 try {
-                    // تفعيل إذن الميكروفون للجوال إجباريّاً قبل التشغيل
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(track => track.stop());
-
-                    recognition.lang = sourceLang.value;
-                    originalOutput.innerText = '...';
-                    translatedOutput.innerText = '...';
-                    recognition.start();
-                } catch (err) {
-                    alert('يرجى السماح بالميكروفون من إعدادات المتصفح.');
-                    statusText.innerText = 'تم رفض الإذن.';
-                }
+                    stream.getTracks().forEach(t => t.stop());
+                    sttRecognition.lang = sttLang.value;
+                    sttOutput.innerText = '';
+                    sttRecognition.start();
+                } catch(err) { alert('يرجى السماح بالميكروفون'); }
             } else {
-                isRecording = false;
-                recognition.stop();
+                isSttRunning = false;
+                sttRecognition.stop();
+            }
+        }
+
+        // --- محرك القسم الثاني: الترجمة الفورية (كتابة وصوت) ---
+        const transInput = document.getElementById('transInput');
+        const transOutput = document.getElementById('transOutput');
+        const transSource = document.getElementById('transSource');
+        const transTarget = document.getElementById('transTarget');
+        const transMicBtn = document.getElementById('transMicBtn');
+        const transStatus = document.getElementById('transStatus');
+
+        let transRecognition;
+        let isTransVoiceRunning = false;
+
+        if (SpeechRecognition) {
+            transRecognition = new SpeechRecognition();
+            transRecognition.continuous = false;
+            transRecognition.interimResults = false;
+
+            transRecognition.onstart = () => {
+                isTransVoiceRunning = true;
+                transMicBtn.classList.add('recording');
+                transMicBtn.innerText = '⏹️ استماع للترجمة...';
+                transStatus.innerText = 'تحدث الآن لترجمته...';
+            };
+            transRecognition.onresult = async (e) => {
+                const spokenText = e.results[0][0].transcript;
+                transInput.value = spokenText;
+                await translateText(spokenText);
+            };
+            transRecognition.onerror = (e) => { transStatus.innerText = 'خطأ: ' + e.error; };
+            transRecognition.onend = () => {
+                transMicBtn.classList.remove('recording');
+                transMicBtn.innerText = '🎤 ترجمة صوتية مباشرة';
+                transStatus.innerText = 'جاهز...';
+                isTransVoiceRunning = false;
+            };
+        }
+
+        async function toggleTranslationVoice() {
+            if (!transRecognition) { alert('المتصفح لا يدعم الصوت'); return; }
+            if (!isTransVoiceRunning) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(t => t.stop());
+                    // ربط لغة الاستماع للترجمة بلغة المصدر المختارة
+                    const langMap = { ar: 'ar-SA', ur: 'ur-PK', en: 'en-US', hi: 'hi-IN', fr: 'fr-FR', es: 'es-ES' };
+                    transRecognition.lang = langMap[transSource.value] || 'ar-SA';
+                    transRecognition.start();
+                } catch(err) { alert('يرجى السماح بالميكروفون'); }
+            } else {
+                transRecognition.stop();
+            }
+        }
+
+        async function doTranslation() {
+            const text = transInput.value.trim();
+            if (!text) { transOutput.innerText = 'الترجمة ستظهر هنا بدقة...'; return; }
+            await translateText(text);
+        }
+
+        async function translateText(text) {
+            transOutput.innerText = 'جاري الترجمة الفورية بدقة...';
+            try {
+                const src = transSource.value;
+                const tgt = transTarget.value;
+                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${src}|${tgt}`);
+                const data = await res.json();
+                if (data && data.responseData) {
+                    transOutput.innerText = data.responseData.translatedText;
+                } else {
+                    transOutput.innerText = 'تعذر الحصول على الترجمة.';
+                }
+            } catch(err) {
+                transOutput.innerText = 'خطأ في الاتصال بخدمة الترجمة.';
             }
         }
     </script>
